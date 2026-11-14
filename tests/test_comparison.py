@@ -190,6 +190,20 @@ class ComparisonTests(unittest.TestCase):
             self.prepare()
         self.assertFalse(self.output.exists())
 
+    def test_split_selection_never_freezes_other_partition_sources_or_reference_answers(
+        self,
+    ):
+        self.suite["tasks"][0]["split"] = "development"
+        self.prepare(split="development")
+        plan = frozen(self.output)
+        self.assertEqual(len(plan["tasks"]), 1)
+        self.assertEqual(plan["tasks"][0]["id"], "one")
+        self.assertEqual({case["task"] for case in plan["cases"]}, {"one"})
+        self.assertEqual(len(plan["files"]), 1)
+        self.assertNotIn("Independent fixture.", json.dumps(plan))
+        copied = [path.read_text() for path in (self.output / "sources").rglob("*.txt")]
+        self.assertFalse(any("Independent fixture." in text for text in copied))
+
     def test_invalid_changes_and_duplicate_tasks_are_rejected_before_writes(self):
         self.suite["conditions"][0]["change"] = {
             "after_seconds": 2,

@@ -195,6 +195,7 @@ def prepare(
     model=None,
     repetitions=3,
     seed=1729,
+    split=None,
 ):
     suite_path, output = suite_path.resolve(), output.resolve()
     suite = read_json(suite_path)
@@ -205,6 +206,8 @@ def prepare(
         raise ValueError("repetitions must be a positive integer")
     if type(seed) is not int:
         raise ValueError("seed must be an integer")
+    if split not in {None, "development", "test"}:
+        raise ValueError("split must be development or test")
     profiles = load_models(models_path)
     Planner(profiles)
     if experiment not in {"scheduling", "selection"}:
@@ -294,6 +297,12 @@ def prepare(
         tasks.append(task)
     if not tasks or len({task["id"] for task in tasks}) != len(tasks):
         raise ValueError("Supply nonempty tasks with unique IDs")
+    if split is not None:
+        tasks = [task for task in tasks if task["split"] == split]
+        if not tasks:
+            raise ValueError("No tasks match the requested split")
+        sources = {name for task in tasks for name in task["sources"]}
+        snapshots = {name: data for name, data in snapshots.items() if name in sources}
     conditions = suite["conditions"]
     if not conditions or len({condition["id"] for condition in conditions}) != len(
         conditions
@@ -365,6 +374,7 @@ def prepare(
         "suite": suite["id"],
         "description": suite["description"],
         "experiment": experiment,
+        "split": split,
         "repetitions": repetitions,
         "seed": seed,
         "models": [asdict(profile) for profile in profiles],
@@ -1054,6 +1064,7 @@ def main(argv=None):
     build.add_argument("--model")
     build.add_argument("--repetitions", type=int, default=3)
     build.add_argument("--seed", type=int, default=1729)
+    build.add_argument("--split", choices=("development", "test"))
     run = commands.add_parser(
         "run",
         help="Synthetic by default; live requires sharing approval and study caps",
@@ -1084,6 +1095,7 @@ def main(argv=None):
                 model=args.model,
                 repetitions=args.repetitions,
                 seed=args.seed,
+                split=args.split,
             )
         elif args.command == "run":
             result = execute(

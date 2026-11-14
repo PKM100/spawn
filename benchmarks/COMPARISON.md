@@ -37,6 +37,9 @@ discarding the records or restarting in the same directory.
 ## Tasks and constraints
 
 Copy `suite.example.json` and supply independently sourced, legally reusable tasks.
+The [QASPER task set](QASPER.md) provides a reproducible research-paper starting set.
+Use `prepare --split development` for tuning and `prepare --split test` only for
+the frozen held-out evaluation; unselected tasks and sources are not copied.
 Source paths resolve relative to the suite. Only named local text files are read;
 the normal UTF-8 ingestion limits apply. Each task declares:
 
