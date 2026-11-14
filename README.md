@@ -97,6 +97,8 @@ completion outcomes. Cost, time and usefulness must include execution overhead.
 [Run the comparative benchmark](benchmarks/COMPARISON.md): frozen suites, four
 policies, budget/deadline sweeps, blind review and paired analysis. Offline by default.
 An external [QASPER task set](benchmarks/QASPER.md) is available for evaluation.
+[Development results](benchmarks/QASPER_RESULTS.md): batching helps runtime,
+but no Spawn-specific advantage is established; independent quality review is pending.
 
 [Protocol](benchmarks/PROTOCOL.md) ·
 [Initial pilot and limitations](benchmarks/RESULTS.md) ·

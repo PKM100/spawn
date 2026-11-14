@@ -4,6 +4,8 @@ This harness tests whether Spawn completes more original tasks within matched
 cost/time limits, or improves cost/time at comparable quality. It does not assume
 Spawn wins. The bundled suite is **authored development smoke data**, not a
 representative benchmark or a replacement for the preserved v1 pilot.
+Recorded external-task development measurements and limitations are in
+[QASPER results](QASPER_RESULTS.md); these do not establish a performance advantage.
 
 ## Offline walkthrough
 
