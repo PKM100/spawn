@@ -1,0 +1,6 @@
+Mesa synthetic batching study
+The study evaluated 12 authored tasks.
+The per-criterion policy used 18 model calls.
+The batched policy used 6 model calls.
+The batched policy's measured p95 elapsed time was 42 seconds.
+This fixture describes invented data and is not a Spawn experiment result.

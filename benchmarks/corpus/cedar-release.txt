@@ -1,0 +1,5 @@
+Cedar release note, revision 3
+The Cedar launch owner is team Meridian.
+The deployment freeze is 45 minutes.
+Production rollout requires ticket OPS-741.
+These are authored benchmark facts, not a real organization's release policy.

@@ -1,0 +1,124 @@
+{
+  "started_at_utc": "2026-11-14T08:06:07.729306+00:00",
+  "python": "3.14.6",
+  "platform": "Darwin arm64",
+  "sdk_version": "1.0.34",
+  "cli_version": "GitHub Copilot CLI 1.0.112.\nRun 'copilot update' to check for updates.",
+  "profile": {
+    "name": "copilot-luna",
+    "provider": "copilot",
+    "model_id": "gpt-6-luna",
+    "base_url": "https://github.com",
+    "input_usd_per_million": 0.1,
+    "output_usd_per_million": 0.5,
+    "output_tokens_per_second": 100,
+    "input_tokens_per_second": 2000,
+    "latency_seconds": 3,
+    "context_tokens": 64000,
+    "max_output_tokens": 4000,
+    "api_key_env": "",
+    "output_limit_field": "max_completion_tokens",
+    "system_role": "system",
+    "preference": 0,
+    "per_call_usd_reserve": 0.3,
+    "reasoning_effort": "none"
+  },
+  "seed": 1729,
+  "manifest": {
+    "files": {
+      "benchmarks/tasks.json": "43fa57f765210457ccbd184a3bf6240895ba0fbbda403eca43a88cafd9bd0373",
+      "benchmarks/PROTOCOL.md": "95f85981dd4b88ef5d9606107cd3fb744395019e63f8fd843ad7869a496fba8e",
+      "benchmarks/run_pilot.py": "358e14de8c6053dcd8d5944954f3366d2167fbfade32430a80a7f18f517c7157",
+      "benchmarks/corpus/cedar-release.txt": "bc49be990fddebdad9d84e2b7e3a0a01693d7144b03f46cff2ca5990f8fdb4b7",
+      "benchmarks/corpus/cedar-review.txt": "12d18b3848c5d173b34c5b43f49209bb362a8dad704c6e1a380563ed6a9fb190",
+      "benchmarks/corpus/harbor-incident.txt": "ff87b420281383c67af508df032914c56074b03fc3199beea78ae5dcd5e22d4f",
+      "benchmarks/corpus/harbor-review.txt": "25229e91239324af516b67c274f0e78123f8b6c60693d55a43e5f09fc5d26d46",
+      "benchmarks/corpus/mesa-review.txt": "bb37d41654e0386f38f33e2b0fd7e26ae5c7225bc575f0c1f8d25afeee735d91",
+      "benchmarks/corpus/mesa-study.txt": "a06739025dad179eb17cc47f260427c4db0c9341f65df4c8896c2ad010605f8f",
+      "benchmarks/corpus/orbit-operations.txt": "bcc34975040704ccc640f12c761c61ae5434d6a533a0de71fe7687ce6012c459",
+      "benchmarks/corpus/orbit-policy.txt": "7916ba1d3090eb81ae2fdc80043f27e102af65388a36e2bfc8370e21ce5f7ce6",
+      "src/spawn/__init__.py": "9c12908cf0c3581a9ae3aa4ce8d1e435acb1de17da668705675d7dd53cdf0aa8",
+      "src/spawn/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "src/spawn/cli.py": "3f051f1615838174132face97c3a37dbd895cefbee96e7dce10738e668414281",
+      "src/spawn/config.py": "b1fba704b877588f5fa333f50d45a75845b3b8cf43a5306a8d277fd2f16d6d7d",
+      "src/spawn/contracts.py": "d31225f06b672adba74d90be9f147796d797cd2959e6f973ac5907dd531df276",
+      "src/spawn/copilot_provider.py": "86b45da6476b7107a457b2b5208d75fe056d6ad68c2f08cf15be0d7e890fd8fc",
+      "src/spawn/demo.py": "1211114bdee74c86eaa1bd2c5d63dba34fccd7f958d480adaa7fd0897a19f9de",
+      "src/spawn/documents.py": "6b941d383b64f5cdc3045e83fe1c48cc725732d957a34c019df791ed40eef485",
+      "src/spawn/evaluation.py": "aef85dd3bf76675b369f0109cbf318a60da2121324aa5f828b13808b940a0352",
+      "src/spawn/evidence.py": "ad3be5d03a72586b8d4c2d75f1296f33b5df9ad6197a32808c1d5f98c4f26e31",
+      "src/spawn/history.py": "072afdfe366a3156b0a1a7b6c2c3f48644698aba3cea73d3613b2204b5153cc4",
+      "src/spawn/planner.py": "f5d54aafc3fe5835af2b1e82b95db4cb8d5a3d751590fca41ec178217b498473",
+      "src/spawn/providers.py": "c89cf399d1c2de1c7e4944a92515282cc951f303bf8bfd70d60c7c8ea8e17dd5",
+      "src/spawn/runtime.py": "da2f28192fb52edb121b837dc7a4b9428b4abaae51f71c148797a0bc3f0ca8b1",
+      "src/spawn/ui.py": "dde7d5b03b9d62289337e4f5f3663b5db5b5723d80fe572dd05baca4e4c26d59"
+    },
+    "sha256": "7f35e3c8def897d39f64ec6c28bebd21eec8850dce2da9835e909482bf5571de"
+  },
+  "catalog_model": {
+    "id": "gpt-6-luna",
+    "name": "GPT-6 Luna",
+    "capabilities": {
+      "supports": {
+        "vision": true,
+        "reasoningEffort": true
+      },
+      "limits": {
+        "max_prompt_tokens": 872000,
+        "max_output_tokens": 128000,
+        "max_context_window_tokens": 1000000,
+        "vision": {
+          "supported_media_types": [
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/gif",
+            "application/pdf"
+          ],
+          "max_prompt_images": 1,
+          "max_prompt_image_size": 3145728
+        }
+      }
+    },
+    "policy": {
+      "state": "enabled",
+      "terms": "Enable access to the latest GPT-6 Luna model from OpenAI. [Learn more about how GitHub Copilot serves GPT-6 Luna](https://gh.io/copilot-openai)."
+    },
+    "billing": {
+      "tokenPrices": {
+        "batchSize": 1000000,
+        "cachePrice": 1.0,
+        "cacheReadPrice": 1.0,
+        "cacheWritePrice": 12.5,
+        "contextMax": 272000,
+        "inputPrice": 10.0,
+        "longContext": {
+          "cachePrice": 2.0,
+          "cacheReadPrice": 2.0,
+          "cacheWritePrice": 25.0,
+          "contextMax": 872000,
+          "inputPrice": 20.0,
+          "maxPromptTokens": 872000,
+          "outputPrice": 75.0
+        },
+        "maxPromptTokens": 272000,
+        "outputPrice": 50.0
+      }
+    },
+    "supportedReasoningEfforts": [
+      "none",
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ]
+  },
+  "pricing_source": "https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing",
+  "setup_smoke": {
+    "calls": 1,
+    "seconds": 5.494494582992047,
+    "usage_equivalent_usd": 2.25e-05,
+    "included_in_policy_comparisons": false
+  }
+}

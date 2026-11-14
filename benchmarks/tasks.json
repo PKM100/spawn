@@ -1,0 +1,62 @@
+[
+  {
+    "id": "cedar",
+    "goal": "Summarize Cedar's release contract using only the supplied notes.",
+    "sources": ["cedar-release.txt", "cedar-review.txt"],
+    "criteria": [
+      {"id": "owner", "description": "Name the launch owner.", "priority": 3},
+      {"id": "freeze", "description": "State the deployment freeze in minutes.", "priority": 2},
+      {"id": "approval", "description": "Identify the production approval ticket, citing both notes.", "min_sources": 2}
+    ],
+    "rubric": {
+      "owner": ["\\bMeridian\\b"],
+      "freeze": ["\\b45\\b"],
+      "approval": ["\\bOPS-741\\b"]
+    }
+  },
+  {
+    "id": "harbor",
+    "goal": "Explain Harbor's incident response constraints without guessing causes.",
+    "sources": ["harbor-incident.txt", "harbor-review.txt"],
+    "criteria": [
+      {"id": "start", "description": "State the incident start time in UTC.", "priority": 3},
+      {"id": "trigger", "description": "State the rollback queue-age threshold in seconds.", "priority": 2},
+      {"id": "recovery", "description": "Identify the recovery ticket and confirmation requirement, citing both notes.", "min_sources": 2}
+    ],
+    "rubric": {
+      "start": ["02:14", "UTC"],
+      "trigger": ["\\b90\\b"],
+      "recovery": ["\\bINC-208\\b", "confirm"]
+    }
+  },
+  {
+    "id": "mesa",
+    "goal": "Extract the Mesa study's measured results and generalization limit.",
+    "sources": ["mesa-study.txt", "mesa-review.txt"],
+    "criteria": [
+      {"id": "calls", "description": "Give the per-criterion and batched model-call counts.", "priority": 3},
+      {"id": "latency", "description": "Give both policies' p95 elapsed times in seconds, citing both notes.", "priority": 2, "min_sources": 2},
+      {"id": "limitation", "description": "State whether the study used held-out tasks."}
+    ],
+    "rubric": {
+      "calls": ["\\b18\\b", "\\b6\\b"],
+      "latency": ["\\b90\\b", "\\b42\\b"],
+      "limitation": ["(not|no|without)", "held.out"]
+    }
+  },
+  {
+    "id": "orbit",
+    "goal": "Extract Orbit's retention guarantees. Omit unsupported certification claims.",
+    "sources": ["orbit-policy.txt", "orbit-operations.txt"],
+    "criteria": [
+      {"id": "expiry", "description": "Give the primary-document expiry period in days.", "priority": 3},
+      {"id": "cleanup", "description": "Give the cleanup cadence in hours.", "priority": 2},
+      {"id": "certification", "description": "State Orbit's SOC 2 certification date if evidence establishes it; otherwise omit this finding."}
+    ],
+    "rubric": {
+      "expiry": ["\\b30\\b"],
+      "cleanup": ["\\b24\\b"],
+      "certification": null
+    }
+  }
+]

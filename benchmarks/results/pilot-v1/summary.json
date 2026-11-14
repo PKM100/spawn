@@ -1,0 +1,79 @@
+{
+  "runs": 12,
+  "policies": {
+    "spawn": {
+      "runs": 4,
+      "calls": 4,
+      "rubric_passes": 4,
+      "criterion_checks_passed": 12,
+      "false_evidence_ready": 0,
+      "within_limits": 4,
+      "total_usage_equivalent_usd": 0.0004618000000000122,
+      "mean_end_to_end_seconds": 4.770825875020819,
+      "time_scenario_coverage": 0,
+      "cost_scenario_coverage": 0
+    },
+    "single_pass": {
+      "runs": 4,
+      "calls": 4,
+      "rubric_passes": 4,
+      "criterion_checks_passed": 12,
+      "false_evidence_ready": 0,
+      "within_limits": 4,
+      "total_usage_equivalent_usd": 0.0004518000000000022,
+      "mean_end_to_end_seconds": 4.671660343708936,
+      "time_scenario_coverage": 0,
+      "cost_scenario_coverage": 0
+    },
+    "per_criterion": {
+      "runs": 4,
+      "calls": 12,
+      "rubric_passes": 4,
+      "criterion_checks_passed": 12,
+      "false_evidence_ready": 0,
+      "within_limits": 4,
+      "total_usage_equivalent_usd": 0.0007444999999999813,
+      "mean_end_to_end_seconds": 12.14838992676232,
+      "time_scenario_coverage": 0,
+      "cost_scenario_coverage": 0
+    }
+  },
+  "paired_intervals": {
+    "single_pass": {
+      "end_to_end_seconds": {
+        "spawn_minus_baseline_mean": 0.09916553131188266,
+        "paired_bootstrap_95_percentile": [
+          -0.06466285395435989,
+          0.2529532915796153
+        ],
+        "paired_tasks": 4
+      },
+      "accounted_cost_usd": {
+        "spawn_minus_baseline_mean": 2.5000000000025002e-06,
+        "paired_bootstrap_95_percentile": [
+          -5.000000000143778e-07,
+          5.500000000019378e-06
+        ],
+        "paired_tasks": 4
+      }
+    },
+    "per_criterion": {
+      "end_to_end_seconds": {
+        "spawn_minus_baseline_mean": -7.377564051741501,
+        "paired_bootstrap_95_percentile": [
+          -7.598658895469271,
+          -7.183182645530906
+        ],
+        "paired_tasks": 4
+      },
+      "accounted_cost_usd": {
+        "spawn_minus_baseline_mean": -7.067499999999227e-05,
+        "paired_bootstrap_95_percentile": [
+          -7.59499999999913e-05,
+          -6.539999999999324e-05
+        ],
+        "paired_tasks": 4
+      }
+    }
+  }
+}

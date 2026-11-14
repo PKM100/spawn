@@ -1,0 +1,13 @@
+Synthetic research note for demonstrating Spawn. This is not a real paper.
+
+Method: A scheduler batches independent document-reading operations before
+requesting another model-driven decision. The proposed benefit is lower overhead.
+
+Evaluation: Compare against a model call after every operation, with identical
+documents, tools, model choices and completion criteria. Measure total cost,
+wall-clock duration, task success and citation accuracy on held-out tasks.
+
+Limitations: Exact quote matching does not establish semantic support.
+Synthetic demonstrations do not establish savings on real research workloads.
+Deployment and model variability can invalidate assumed timing estimates.
+Future work includes live web retrieval and calibrated outcome forecasting.

@@ -1,0 +1,5 @@
+Harbor synthetic incident report
+The incident started at 02:14 UTC.
+The rollback trigger is queue age above 90 seconds.
+The approved recovery ticket is INC-208.
+The observed symptom was delayed message acknowledgements.

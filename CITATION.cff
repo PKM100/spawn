@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use Spawn, please cite this software and identify the commit used."
+type: software
+title: "Spawn: constraint-first document research"
+version: 0.1.0
+authors:
+  - name: PKM100
+repository-code: "https://github.com/PKM100/spawn"
+url: "https://pkm100.github.io/spawn/"
+license: MIT
+abstract: >-
+  An instrumented Python library and CLI for preflight cost/time scenarios,
+  permission-bound execution, and evidence-checked document research.
+  Research MVP; forecasts and optimization efficacy are not validated.

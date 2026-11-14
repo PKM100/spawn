@@ -1,0 +1,4 @@
+Orbit synthetic retention policy
+Primary documents expire after 30 days.
+User-created exports are excluded from automatic deletion.
+The policy applies only to the authored example workspace.

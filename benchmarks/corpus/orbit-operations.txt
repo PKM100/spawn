@@ -1,0 +1,4 @@
+Orbit operations note
+The cleanup job runs every 24 hours.
+Cleanup scheduling does not change the document expiry period.
+These notes contain no audit certification statement.

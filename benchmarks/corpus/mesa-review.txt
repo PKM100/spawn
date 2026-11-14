@@ -1,0 +1,5 @@
+Mesa study review
+The per-criterion policy's measured p95 elapsed time was 90 seconds.
+The study did not use held-out tasks.
+The 12 tasks came from one authored template family.
+The review found no basis for claiming broad generalization.

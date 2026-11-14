@@ -1,0 +1,4 @@
+Cedar release review
+The rehearsal covered 12 synthetic regions.
+The rehearsal did not include failover.
+Team Meridian must obtain approval on OPS-741 before production rollout.
