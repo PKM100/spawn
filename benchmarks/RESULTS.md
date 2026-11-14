@@ -9,6 +9,11 @@ Primary data: [records.jsonl](results/pilot-v1/records.jsonl),
 [environment/pricing/manifest](results/pilot-v1/metadata.json).
 Protocol: [PROTOCOL.md](PROTOCOL.md). All evaluation runs are retained.
 
+The primary experiment used v0.1.0, whose implementation is available at
+[commit 4c91fff](https://github.com/PKM100/spawn/tree/4c91fff209d8501080ef5f440d3abf05cc1f3547).
+Later wizard/skill changes are not covered by these results. The stored manifest
+is intentionally unchanged; checking out that commit restores the measured code.
+
 ## Methods
 
 On 2026-11-14, evaluate four authored tasks with two documents and three

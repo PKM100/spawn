@@ -57,7 +57,7 @@ async function showResults() {
     });
     body.replaceChildren(...rows);
     document.getElementById("results-note").textContent =
-      `Primary pilot: ${data.date}. ${data.summary.runs} runs; one repetition per task/policy. ` +
+      `Primary pilot (v0.1.0): ${data.date}. ${data.summary.runs} runs; one repetition per task/policy. ` +
       "Time includes planning, CLI/SDK startup, calls, checks, and receipts. " +
       "Calls count application-level SDK invocations. " +
       "Dollars are Copilot usage equivalents, not incremental invoice spend. " +

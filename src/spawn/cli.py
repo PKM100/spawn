@@ -1,7 +1,8 @@
 import argparse
 import json
+import os
 import sys
-from dataclasses import replace
+from dataclasses import asdict, replace
 from importlib.resources import files
 from pathlib import Path
 
@@ -9,15 +10,18 @@ from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
 from rich.text import Text
 
-from .config import load_models, load_request
+from .config import configuration_from_data, load_models, load_request
 from .contracts import Budget, Request
 from .demo import DemoProvider, demo_request
 from .documents import load_documents
 from .evaluation import evaluate
 from .history import History
 from .planner import Planner
+from .profiles import copilot_profiles
+from .providers import ProviderError
 from .runtime import Runtime, read_control
 from .ui import RunDashboard, heading, make_console, show_plan, show_result
+from .wizard import collect_request
 
 
 def _arguments(argv):
@@ -26,6 +30,26 @@ def _arguments(argv):
         description="Preflight, approve, and execute constrained document research.",
     )
     commands = parser.add_subparsers(dest="command")
+    commands.add_parser("start", help="Guided research; no configuration files needed")
+    catalog = commands.add_parser(
+        "models", help="Discover enabled, priced Copilot models"
+    )
+    catalog.add_argument("--json", action="store_true")
+    skills = commands.add_parser(
+        "skills", help="Install research skills for coding agents"
+    )
+    skills_commands = skills.add_subparsers(dest="skills_command", required=True)
+    install = skills_commands.add_parser(
+        "install", help="Install SKILL.md, never overwrite"
+    )
+    install.add_argument(
+        "--agent", choices=["all", "claude", "codex", "copilot"], default="all"
+    )
+    install.add_argument("--scope", choices=["project", "user"], default="project")
+    install.add_argument(
+        "--directory", type=Path, help="Project directory; default: cwd"
+    )
+    install.add_argument("--json", action="store_true")
     init = commands.add_parser("init", help="Create an editable example configuration")
     init.add_argument("directory", type=Path)
     init.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
@@ -38,8 +62,14 @@ def _arguments(argv):
                 "launch": "Interactively adjust constraints before approving execution",
             }[name],
         )
-        command.add_argument("request", type=Path)
-        command.add_argument("--models", type=Path, required=True)
+        command.add_argument(
+            "request", type=Path, nargs="?" if name != "launch" else None
+        )
+        command.add_argument("--models", type=Path, required=name == "launch")
+        if name != "launch":
+            command.add_argument(
+                "--stdin", action="store_true", help="Read a JSON contract from stdin"
+            )
         command.add_argument("--model", help="Pin an approved profile by name")
         command.add_argument(
             "--seconds", type=float, help="Override the initial deadline"
@@ -79,6 +109,25 @@ def _arguments(argv):
 
 
 def _configure(args):
+    if getattr(args, "stdin", False):
+        if (
+            args.request
+            or args.models
+            or args.model is not None
+            or args.usd is not None
+            or args.seconds is not None
+        ):
+            raise ValueError("--stdin cannot be mixed with files or contract overrides")
+        raw = sys.stdin.read(1_000_001)
+        if len(raw) > 1_000_000:
+            raise ValueError("JSON stdin contract exceeds 1,000,000 characters")
+        request, models = configuration_from_data(json.loads(raw), Path.cwd())
+        request = replace(request, budget=read_control(request, request.budget))
+        return request, Planner(
+            models, History(request.permissions.output_root / "history.sqlite3")
+        )
+    if args.request is None or args.models is None:
+        raise ValueError("Supply request and --models files, or use --stdin")
     request = load_request(args.request)
     request = replace(
         request,
@@ -198,7 +247,10 @@ def main(argv: list[str] | None = None) -> int:
     console = make_console()
     machine = getattr(args, "json", False)
     try:
-        if args.command is None:
+        guided = args.command == "start" or (
+            args.command is None and console.is_terminal and sys.stdin.isatty()
+        )
+        if args.command is None and not guided:
             heading(console)
             console.print(
                 Panel(
@@ -214,6 +266,29 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
             return 0
+        if guided:
+            if not console.is_terminal or not sys.stdin.isatty():
+                raise ValueError("start needs a terminal; use plan/run --stdin --json")
+            if os.environ.get("SPAWN_ACTIVE") == "1":
+                raise ValueError("Nested Spawn execution is not permitted")
+            heading(console)
+            configured = collect_request(console)
+            if configured is None:
+                console.print(Text("Nothing started.", style="dim"))
+                return 0
+            request, planner = configured
+            request = _interactive_request(console, request, planner)
+            if request is None:
+                console.print(Text("Nothing started.", style="dim"))
+                return 0
+            request = _approve(console, request, planner, assume_yes=False)
+            if request is None:
+                console.print(Text("Nothing started.", style="dim"))
+                return 0
+            with RunDashboard(console, request) as dashboard:
+                result = Runtime(planner, on_event=dashboard.event).run(request)
+            show_result(console, result, request)
+            return 130 if result["stopping_reason"] == "interrupted" else 0
         if not machine:
             heading(
                 console,
@@ -221,7 +296,13 @@ def main(argv: list[str] | None = None) -> int:
                 if args.command == "demo"
                 else "Know the tradeoff. Then spawn.",
             )
-        if args.command == "init":
+        if args.command == "models":
+            result = {"models": [asdict(m) for m in copilot_profiles()]}
+        elif args.command == "skills":
+            from .skills import install_skills
+
+            result = install_skills(args.agent, args.scope, args.directory)
+        elif args.command == "init":
             if args.directory.exists():
                 raise ValueError(
                     "Choose a new directory; init never overwrites existing files"
@@ -276,6 +357,8 @@ def main(argv: list[str] | None = None) -> int:
             if not machine and args.command != "launch":
                 show_plan(console, request, plan)
             if args.command != "demo":
+                if os.environ.get("SPAWN_ACTIVE") == "1":
+                    raise ValueError("Nested Spawn execution is not permitted")
                 request = _approve(
                     console,
                     request,
@@ -299,13 +382,13 @@ def main(argv: list[str] | None = None) -> int:
         else:
             console.print_json(data=result)
         return 130 if result.get("stopping_reason") == "interrupted" else 0
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         if not machine:
             console.print(
                 Text("\nCancelled. No further work will be started.", style="yellow")
             )
         return 130
-    except (OSError, ValueError, KeyError, TypeError) as error:
+    except (OSError, ValueError, KeyError, TypeError, ProviderError) as error:
         if machine:
             print(json.dumps({"error": str(error)}), file=sys.stderr)
         else:

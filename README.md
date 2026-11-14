@@ -16,13 +16,47 @@ it does not establish general savings, calibrated forecasts, or research novelty
 
 ## Try the terminal UI
 
-Requires Python 3.11+.
+Requires Python 3.11+ and [pipx](https://pipx.pypa.io/stable/installation/).
+On macOS, install pipx with `brew install pipx`.
 
 ```sh
 git clone https://github.com/PKM100/spawn.git
 cd spawn
+pipx install '.[copilot]'
+pipx ensurepath
+# Open a new terminal if pipx added its executable directory to PATH.
+spawn
+```
+
+**No TOML, JSON file, or code edits are needed for guided research.** Bare `spawn`
+in a terminal asks for the goal, individual source files, prioritized completion
+criteria, source-count requirements, provider/model, spending limit, deadline,
+output directory, scope-reduction and failure policy. You can adjust the preflight,
+then separately approve model sharing and artifact writes. Cancelled launches do
+not run inference or write research artifacts.
+
+Copilot is the default provider. Discovery uses your CLI sign-in, sends no source
+documents and makes no inference calls. The wizard converts live catalog token
+prices and lets you pin a listed model or approve automatic choice among them.
+It uses conservative short-context bounds and uncalibrated throughput assumptions,
+not measured quality or latency estimates. OpenAI-compatible/Anthropic setups ask
+for an endpoint, model ID, **environment-variable name**, and actual token prices;
+the wizard never asks you to paste a secret.
+
+When personal skills are missing, the wizard offers an **opt-in** installation
+for Claude Code, Codex and Copilot. Declining continues research without installing
+them; the offer can appear on a later launch. Package installation itself never
+silently writes to harness directories or changes agent permission settings.
+
+`spawn start` explicitly opens the wizard. With redirected/nonterminal input,
+bare `spawn` shows help and starts nothing; agents should use the stdin interface
+below. `spawn demo` remains entirely offline.
+
+For source development instead of a global command:
+
+```sh
 python3 -m venv .venv
-.venv/bin/python -m pip install -e '.[dev]'
+.venv/bin/python -m pip install -e '.[dev,copilot]'
 .venv/bin/spawn
 .venv/bin/spawn demo
 ```
@@ -42,7 +76,11 @@ The terminal UI includes:
 Rich output adapts to terminal width. `NO_COLOR=1` disables color. Source text and
 user-supplied strings are rendered as text, not executable Rich markup.
 
-## Real document research
+<a id="real-document-research"></a>
+
+## File-based configuration (optional)
+
+The existing file-based commands remain available for reusable configurations.
 
 ```sh
 .venv/bin/spawn init my-research
@@ -177,6 +215,72 @@ session limit is 30 credits. This is a conservative reservation, not the expecte
 charge. The cap is soft/postpaid and the requested output length is not
 hard-enforced: neither this setting nor `--usd` guarantees a provider-side cap.
 
+## Agent skills and file-free contracts
+
+Enable the bundled skill through the wizard's offer, or explicitly:
+
+```sh
+spawn skills install --agent all --scope user
+# Or share it only in the current project:
+spawn skills install --agent all --scope project
+```
+
+Claude Code uses `.claude/skills/spawn/SKILL.md`. Codex and Copilot share
+`.agents/skills/spawn/SKILL.md`. Personal scope puts those directories under your
+home; project scope uses the current directory or `--directory PATH`. The installer
+is idempotent for identical files and refuses to overwrite custom skills or follow
+symlinked destinations. The canonical [SKILL.md](src/spawn/templates/SKILL.md)
+is shipped in the Python package, so every installation includes the same guidance.
+
+Hosts can match the skill to multi-criterion local-document research, or users can
+invoke it explicitly (Claude Code `/spawn`, Codex `$spawn`, Copilot's skill controls).
+Automatic invocation is host-dependent, not a guaranteed hook for every loop.
+The skill excludes coding, arbitrary tools, web browsing, trivial lookups, recursive
+Spawn calls and unapproved spending. **Installation is not execution consent.**
+Reload/restart your harness if new skills do not appear.
+
+Source discovery: [Claude Code](https://code.claude.com/docs/en/skills),
+[Codex](https://learn.chatgpt.com/docs/build-skills), and
+[Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli).
+
+Agents need no TOML or contract files. Pipe this envelope on stdin:
+
+```sh
+spawn plan --stdin --json <<'SPAWN_CONTRACT'
+{
+  "copilot_models": ["gpt-6-luna"],
+  "request": {
+    "goal": "Summarize the approved research note.",
+    "sources": ["notes/source.txt"],
+    "criteria": [{"id": "method", "description": "Explain the method."}],
+    "budget": {"max_usd": 1, "max_seconds": 120},
+    "permissions": {
+      "read_roots": ["notes"],
+      "output_root": ".spawn",
+      "allowed_models": ["gpt-6-luna"],
+      "send_documents": false
+    },
+    "allow_scope_reduction": true,
+    "on_failure": "defer"
+  }
+}
+SPAWN_CONTRACT
+```
+
+Replace example paths/models with approved ones. `spawn models --json` returns
+enabled, priced Copilot profiles without inference. `copilot_models` must be a
+nonempty explicit model-ID list; it cannot silently broaden `allowed_models`.
+For direct APIs, replace it with `models`, a nonempty array of complete model
+profiles. All relative paths resolve from the command's working directory.
+
+After the user authorizes that exact execution envelope, pipe the same contract
+with `send_documents: true` to `spawn run --stdin --yes --json`. Neither `--yes`
+nor the skill bypasses host permission checks or grants missing sharing permission.
+Stdin cannot be mixed with files or command-line contract overrides. Inputs are
+limited to one million characters. Inspect the receipt even when exit status is
+zero: `partial`/`blocked`, deferred work, errors and violations are not success.
+Do not automatically retry; budgets apply to each run, not an unlimited outer loop.
+
 ### Tighten a running deadline
 
 An optional `control_file` must be inside an approved read root:
@@ -299,7 +403,10 @@ No claimed percentage savings or publication result follows from the offline dem
 
 ### Live feasibility pilot — 2026-11-14
 
-**60 automated tests pass**, separately from the live experiment. The live pilot
+**76 automated tests pass in v0.2.0**, separately from the live experiment.
+The primary v0.1.0 pilot had 60 tests and used the locally frozen implementation
+identified in its metadata; the new wizard/skills have not been re-benchmarked.
+The live pilot
 used four authored document pairs, three frozen criteria per task, three policies,
 one repetition, and Copilot `gpt-6-luna` with reasoning disabled. All arms used
 the same runtime, permissions, model, evidence checks, $2 usage-equivalent budget,

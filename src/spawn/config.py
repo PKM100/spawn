@@ -12,8 +12,13 @@ def load_models(path: Path) -> list[Model]:
 
 
 def load_request(path: Path) -> Request:
-    data = json.loads(path.read_text(encoding="utf-8"))
-    base = path.resolve().parent
+    return request_from_data(
+        json.loads(path.read_text(encoding="utf-8")), path.resolve().parent
+    )
+
+
+def request_from_data(data: dict, base: Path) -> Request:
+    data = dict(data)
 
     def resolve(value: str) -> Path:
         return (base / value).resolve()
@@ -34,3 +39,28 @@ def load_request(path: Path) -> Request:
         control_file=resolve(control_file) if control_file else None,
         **data,
     )
+
+
+def configuration_from_data(data: dict, base: Path) -> tuple[Request, list[Model]]:
+    if not isinstance(data, dict) or set(data) - {
+        "request",
+        "models",
+        "copilot_models",
+    }:
+        raise ValueError("Use a JSON object with request and models or copilot_models")
+    if ("models" in data) == ("copilot_models" in data):
+        raise ValueError("Supply exactly one of models or copilot_models")
+    request = request_from_data(data["request"], base)
+    if "models" in data:
+        entries = data["models"]
+        if not isinstance(entries, list) or not entries:
+            raise ValueError("models must be a nonempty list of model profiles")
+        models = [Model(**entry) for entry in entries]
+    else:
+        from .profiles import copilot_profiles
+
+        ids = data["copilot_models"]
+        if ids is None:
+            raise ValueError("copilot_models must be a nonempty list of model IDs")
+        models = copilot_profiles(ids)
+    return request, models

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import math
+import os
 import shutil
 import tempfile
 from importlib.metadata import version
@@ -96,6 +97,7 @@ class CopilotProvider:
                 base_directory=directory,
                 mode="empty",
                 log_level="error",
+                env={**os.environ, "SPAWN_ACTIVE": "1"},
             ) as client:
                 session = await client.create_session(
                     model=model.model_id,

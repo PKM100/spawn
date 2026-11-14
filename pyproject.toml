@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spawn-agent"
-version = "0.1.0"
+version = "0.2.0"
 description = "Estimate, constrain, and execute document-research agent runs."
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -27,7 +27,7 @@ spawn = "spawn.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-"spawn.templates" = ["*.toml", "*.json", "*.txt"]
+"spawn.templates" = ["*.toml", "*.json", "*.txt", "*.md"]
 
 [tool.ruff]
 target-version = "py311"

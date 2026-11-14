@@ -104,6 +104,7 @@ class ProviderTests(unittest.TestCase):
             "PermissionDecisionReject",
         )
         self.assertEqual(client_type.call_args.kwargs["mode"], "empty")
+        self.assertEqual(client_type.call_args.kwargs["env"]["SPAWN_ACTIVE"], "1")
         self.assertAlmostEqual(response.reported_cost_usd, 0.00001)
         self.assertEqual(response.input_tokens, 12)
 
