@@ -21,9 +21,16 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: python -m pip install -e '.[dev,copilot]'
       - run: python -m unittest discover -s tests -v
-      - run: ruff check src tests benchmarks/run_pilot.py
-      - run: ruff format --check src tests benchmarks/run_pilot.py
+      - run: ruff check src tests benchmarks/*.py
+      - run: ruff format --check src tests benchmarks/*.py
       - run: python benchmarks/run_pilot.py > /tmp/spawn-preflight.json
       - run: python benchmarks/run_pilot.py --summarize > /tmp/spawn-summary.json
+      - run: |
+          python benchmarks/compare.py prepare \
+            --suite benchmarks/suite.example.json \
+            --models src/spawn/templates/models.toml --model fast \
+            --repetitions 1 --output /tmp/spawn-comparison
+          python benchmarks/compare.py run --output /tmp/spawn-comparison > /tmp/spawn-comparison-execution.json
+          python benchmarks/compare.py summarize --output /tmp/spawn-comparison > /tmp/spawn-comparison-summary.json
       - run: python -m pip wheel --no-deps . -w dist
       - run: node --check docs/site.js

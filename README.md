@@ -94,11 +94,14 @@ pilot does not establish a performance advantage.
 Evaluation needs independent tasks, matched baselines, repeated runs and reviewed
 completion outcomes. Cost, time and usefulness must include execution overhead.
 
+[Run the comparative benchmark](benchmarks/COMPARISON.md): frozen suites, four
+policies, budget/deadline sweeps, blind review and paired analysis. Offline by default.
+
 [Protocol](benchmarks/PROTOCOL.md) ·
 [Initial pilot and limitations](benchmarks/RESULTS.md) ·
 [Raw pilot data](benchmarks/results/pilot-v1)
 
-The current release has 76 automated tests. Development and validation commands
-are in [CONTRIBUTING.md](CONTRIBUTING.md).
+Tests run without paid APIs. Development and validation commands are in
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 [MIT license](LICENSE) · [Citation](CITATION.cff)

@@ -1,0 +1,72 @@
+{
+  "id": "authored-smoke",
+  "description": "Development fixtures reused from pilot v1. Not independent, held-out or representative evidence.",
+  "conditions": [
+    {"id": "generous", "max_usd": 2, "max_seconds": 120},
+    {"id": "moderate", "max_usd": 0.60, "max_seconds": 45},
+    {"id": "tight", "max_usd": 0.30, "max_seconds": 15},
+    {"id": "deadline-change", "max_usd": 2, "max_seconds": 120, "change": {"after_seconds": 5, "max_usd": 2, "max_seconds": 10}}
+  ],
+  "tasks": [
+    {
+      "id": "cedar",
+      "family": "extraction",
+      "group": "cedar",
+      "split": "development",
+      "origin": "authored",
+      "provenance": "Project-authored fictional pilot v1 documents; MIT. Already inspected during development.",
+      "goal": "Summarize Cedar's release contract using only the supplied notes.",
+      "sources": ["corpus/cedar-release.txt", "corpus/cedar-review.txt"],
+      "criteria": [
+        {"id": "owner", "description": "Name the launch owner.", "priority": 3},
+        {"id": "freeze", "description": "State the deployment freeze in minutes.", "priority": 2},
+        {"id": "approval", "description": "Identify the production approval ticket, citing both notes.", "min_sources": 2}
+      ],
+      "rubric": {
+        "owner": "Team Meridian. Check that the quote actually supports launch ownership.",
+        "freeze": "45 minutes, not a deployment duration or review period.",
+        "approval": "OPS-741, supported by exact quotes from both supplied documents."
+      }
+    },
+    {
+      "id": "harbor",
+      "family": "cross-document",
+      "group": "harbor",
+      "split": "development",
+      "origin": "authored",
+      "provenance": "Project-authored fictional pilot v1 documents; MIT. Already inspected during development.",
+      "goal": "Explain Harbor's incident response constraints without guessing causes.",
+      "sources": ["corpus/harbor-incident.txt", "corpus/harbor-review.txt"],
+      "criteria": [
+        {"id": "start", "description": "State the incident start time in UTC.", "priority": 3},
+        {"id": "trigger", "description": "State the rollback queue-age threshold in seconds.", "priority": 2},
+        {"id": "recovery", "description": "Identify the recovery ticket and confirmation requirement, citing both notes.", "min_sources": 2}
+      ],
+      "rubric": {
+        "start": "02:14 UTC. Verify the event and timezone, not just the digits.",
+        "trigger": "90 seconds of queue age. Do not accept an unrelated 90-second measurement.",
+        "recovery": "INC-208 and its confirmation requirement, supported by both documents. Reject invented incident causes."
+      }
+    },
+    {
+      "id": "orbit",
+      "family": "unsupported",
+      "group": "orbit",
+      "split": "development",
+      "origin": "authored",
+      "provenance": "Project-authored fictional pilot v1 documents; MIT. Already inspected during development.",
+      "goal": "Extract Orbit's retention guarantees. Omit unsupported certification claims.",
+      "sources": ["corpus/orbit-policy.txt", "corpus/orbit-operations.txt"],
+      "criteria": [
+        {"id": "expiry", "description": "Give the primary-document expiry period in days.", "priority": 3},
+        {"id": "cleanup", "description": "Give the cleanup cadence in hours.", "priority": 2},
+        {"id": "certification", "description": "State Orbit's SOC 2 certification date if evidence establishes it; otherwise omit this finding."}
+      ],
+      "rubric": {
+        "expiry": "30 days for primary documents. Verify the scope of the retention statement.",
+        "cleanup": "24 hours for cleanup cadence, not document retention.",
+        "certification": "No certification date is established. Omission is correct, supported and complete for this criterion; an invented date fails."
+      }
+    }
+  ]
+}
