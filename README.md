@@ -6,7 +6,7 @@ budget and deadline; review the plan, then approve execution.
 Document research is the first use case. The approach can extend to other domains
 with task-specific tools and completion checks; those integrations are not built yet.
 
-[Website](https://pkm100.github.io/spawn/) · [Results](benchmarks/RESULTS.md) ·
+[Website](https://pkm100.github.io/spawn/) · [Initial pilot](benchmarks/RESULTS.md) ·
 [Contributing](CONTRIBUTING.md)
 
 ## Install
@@ -86,23 +86,17 @@ working directory. `--yes` requires explicit `send_documents: true`.
   **$0.30 per call**; reported dollars are usage equivalents, not invoice charges.
 - Reports and receipts can contain source text and paths. Treat them as sensitive.
 
-## Evidence
+## Evaluation
 
-The v0.1.0 pilot used four authored tasks, one model and one repetition per policy.
-All arms passed the automated rubrics—not independent human verification.
+**Representative benchmarks are pending.** The initial four-task feasibility
+pilot does not establish a performance advantage.
 
-| Policy | SDK calls | Mean time | Total Copilot usage equivalent |
-| --- | ---: | ---: | ---: |
-| Spawn | 4 | 4.77 s | $0.0004618 |
-| Fixed single pass | 4 | 4.67 s | $0.0004518 |
-| Fixed per criterion | 12 | 12.15 s | $0.0007445 |
+Evaluation needs independent tasks, matched baselines, repeated runs and reviewed
+completion outcomes. Cost, time and usefulness must include execution overhead.
 
-Spawn did not outperform fixed single-pass batching. Its cost/time ranges each
-covered **0/4** outcomes. This pilot does not establish general performance or
-validate the v0.2.0 wizard and skills.
-
-[Protocol](benchmarks/PROTOCOL.md) · [Raw data](benchmarks/results/pilot-v1) ·
-[Analysis and limitations](benchmarks/RESULTS.md)
+[Protocol](benchmarks/PROTOCOL.md) ·
+[Initial pilot and limitations](benchmarks/RESULTS.md) ·
+[Raw pilot data](benchmarks/results/pilot-v1)
 
 The current release has 76 automated tests. Development and validation commands
 are in [CONTRIBUTING.md](CONTRIBUTING.md).
