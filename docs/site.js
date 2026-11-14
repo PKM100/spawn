@@ -13,19 +13,9 @@ document.querySelectorAll("[data-scope]").forEach((button) => {
     item.querySelector(".check").textContent = shortened ? "-" : "+";
     item.querySelector(".item-state").textContent = shortened ? "deferred" : "scheduled";
     document.getElementById("scope-note").textContent = shortened
-      ? "Illustration: defer lower-priority work. No model is running."
-      : "Scope illustration only. No model is running.";
+      ? "Illustration: lower-priority work deferred."
+      : "Illustration. No model is running.";
   });
-});
-
-document.getElementById("copy-install").addEventListener("click", async () => {
-  const status = document.getElementById("copy-status");
-  try {
-    await navigator.clipboard.writeText(document.getElementById("install-command").textContent);
-    status.textContent = "Copied. Paste into your terminal to start.";
-  } catch {
-    status.textContent = "Clipboard unavailable. Select and copy the commands above.";
-  }
 });
 
 async function showResults() {
@@ -57,14 +47,11 @@ async function showResults() {
     });
     body.replaceChildren(...rows);
     document.getElementById("results-note").textContent =
-      `Primary pilot (v0.1.0): ${data.date}. ${data.summary.runs} runs; one repetition per task/policy. ` +
-      "Time includes planning, CLI/SDK startup, calls, checks, and receipts. " +
-      "Calls count application-level SDK invocations. " +
-      "Dollars are Copilot usage equivalents, not incremental invoice spend. " +
-      "Setup smoke and environment installation are excluded from policy comparisons.";
+      `${data.date} / ${data.summary.runs} runs. Time includes startup, not installation. ` +
+      "Copilot usage equivalents, not invoice charges. Provider caps are best-effort.";
   } catch {
     document.getElementById("results-note").textContent =
-      "The comparison could not load. The frozen protocol and raw JSON records remain available on GitHub.";
+      "Results unavailable here. See the linked data.";
   }
 }
 

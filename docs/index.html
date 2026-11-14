@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101914">
-  <meta name="description" content="Give your agent a goal, a budget, and boundaries. Spawn previews the tradeoffs before permission-bound document research begins.">
-  <meta property="og:title" content="Spawn / Know the tradeoff. Then spawn.">
-  <meta property="og:description" content="Constraint-first document research. An open-source Python library, terminal UI, and honest research pilot.">
+  <meta name="description" content="A Python CLI for local-document research with cost/time previews, explicit permissions and cited reports.">
+  <meta property="og:title" content="Spawn / Document research CLI">
+  <meta property="og:description" content="Set a goal, sources and limits. Review the plan before execution.">
   <meta property="og:url" content="https://pkm100.github.io/spawn/">
-  <title>Spawn / Know the tradeoff. Then spawn.</title>
+  <title>Spawn / Document research CLI</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101914'/%3E%3Cpath d='m16 20 13 12-13 12m19 0h14' fill='none' stroke='%23b9f385' stroke-width='6'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
   <script src="site.js" defer></script>
@@ -18,8 +18,8 @@
   <header class="navigation wrap">
     <a class="wordmark" href="./" aria-label="Spawn home"><span aria-hidden="true">&gt;_</span> spawn</a>
     <nav aria-label="Main navigation">
-      <a href="#how">How it works</a>
-      <a href="#research">The evidence</a>
+      <a href="#how">Usage</a>
+      <a href="#research">Results</a>
       <a class="nav-github" href="https://github.com/PKM100/spawn">GitHub <span aria-hidden="true">&#8599;</span></a>
     </nav>
   </header>
@@ -27,15 +27,15 @@
   <main id="main">
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> OPEN SOURCE / RESEARCH PREVIEW</p>
-        <h1 id="hero-title">A goal.<br>A budget.<br><em>Not a blank check.</em></h1>
-        <p class="lead">Know the tradeoff. Then spawn.</p>
-        <p class="intro">Preview the cost, time, and scope of document research. Approve the boundaries once. Let the run handle the rest.</p>
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> OPEN SOURCE / RESEARCH MVP</p>
+        <h1 id="hero-title">Document<br>research<br><em>in your terminal.</em></h1>
+        <p class="lead">Python CLI. Document research first.</p>
+        <p class="intro">Review cost, time and scope before running. The approach can extend to other domains with task-specific tools and checks.</p>
         <div class="hero-actions">
-          <a class="button primary" href="#start">Try the CLI <span aria-hidden="true">&#8594;</span></a>
-          <a class="button secondary" href="https://github.com/PKM100/spawn">Explore the source</a>
+          <a class="button primary" href="https://github.com/PKM100/spawn#install">Install <span aria-hidden="true">&#8594;</span></a>
+          <a class="button secondary" href="https://github.com/PKM100/spawn">Source</a>
         </div>
-        <p class="fineprint">Python 3.11+ <span>/</span> MIT licensed <span>/</span> Local-first controls</p>
+        <p class="fineprint">Python 3.11+ <span>/</span> MIT <span>/</span> Guided setup</p>
       </div>
 
       <div class="terminal" aria-label="Illustrative Spawn terminal preflight">
@@ -43,7 +43,7 @@
         <div class="terminal-body">
           <p class="command"><span>$</span> spawn<br><span class="command-indent">guided research / no config files</span></p>
           <div class="terminal-rule"></div>
-          <div class="terminal-heading"><span class="mini-logo" aria-hidden="true">&gt;_</span><div><strong>YOUR RUN. YOUR LIMITS.</strong><p>A contract before a model call.</p></div></div>
+          <div class="terminal-heading"><span class="mini-logo" aria-hidden="true">&gt;_</span><div><strong>RESEARCH PREFLIGHT</strong><p>Review before inference.</p></div></div>
           <div class="terminal-cards">
             <div><span>ACCOUNTING</span><strong>$0.30</strong><small>Copilot reserve / call</small></div>
             <div><span>SUCCESS PROBABILITY</span><strong class="unknown">Unknown</strong><small>Not enough evidence yet</small></div>
@@ -52,62 +52,43 @@
           <ul class="deliverables">
             <li><span class="check" aria-hidden="true">+</span><span>Compare the methods</span><span class="item-state">scheduled</span></li>
             <li><span class="check" aria-hidden="true">+</span><span>Find the limitations</span><span class="item-state">scheduled</span></li>
-            <li id="optional-deliverable"><span class="check" aria-hidden="true">+</span><span>Map the follow-up work</span><span class="item-state">scheduled</span></li>
+            <li id="optional-deliverable"><span class="check" aria-hidden="true">+</span><span>List follow-up work</span><span class="item-state">scheduled</span></li>
           </ul>
-          <p id="scope-note" class="scope-note" aria-live="polite">Scope illustration only. No model is running.</p>
+          <p id="scope-note" class="scope-note" aria-live="polite">Illustration. No model is running.</p>
           <div class="permission-strip"><span aria-hidden="true">&#9632;</span> Approved sources only <span>/</span> Tools disabled</div>
-          <p class="terminal-prompt"><span>&gt;</span> Review. Adjust. Approve.<span class="cursor" aria-hidden="true"></span></p>
+          <p class="terminal-prompt"><span>&gt;</span> Awaiting approval<span class="cursor" aria-hidden="true"></span></p>
         </div>
       </div>
     </section>
 
-    <div class="provider-band wrap"><span>BRING YOUR MODEL</span><p>OpenAI-compatible APIs <i>/</i> Anthropic <i>/</i> GitHub Copilot SDK</p><a href="https://github.com/PKM100/spawn#bring-a-model">Or pin an approved model <span aria-hidden="true">&#8599;</span></a></div>
+    <div class="provider-band wrap"><span>PROVIDERS</span><p>OpenAI-compatible APIs <i>/</i> Anthropic <i>/</i> GitHub Copilot SDK</p><a href="https://github.com/PKM100/spawn#models">Model setup <span aria-hidden="true">&#8599;</span></a></div>
 
     <section class="section wrap" id="how" aria-labelledby="how-title">
-      <div class="section-intro"><p class="eyebrow">01 / THE EXECUTION CONTRACT</p><h2 id="how-title">Decide the boundaries.<br>Not every next step.</h2><p>No surprise tool permissions halfway through a run. No pretending that scheduled work is guaranteed success.</p></div>
+      <div class="section-intro"><p class="eyebrow">01 / USAGE</p><h2 id="how-title">Run a<br>research task.</h2><p>The wizard replaces manual configuration. Skills let Claude Code, Codex and Copilot delegate research with your consent.</p></div>
       <div class="feature-grid">
-        <article class="feature"><span class="feature-number">01</span><h3>Just type spawn.</h3><p>The terminal wizard asks for your goal, documents, completion criteria, models, and limits. No TOML edits.</p><code>goal + criteria + sources</code></article>
-        <article class="feature"><span class="feature-number">02</span><h3>See the tradeoffs.</h3><p>Compare profile-based cost/time scenarios and planned coverage. Pin a model or let the heuristic scheduler choose.</p><code>preview &#8594; adjust &#8594; approve</code></article>
-        <article class="feature"><span class="feature-number">03</span><h3>Keep the useful work.</h3><p>Tighten limits between calls. Spawn replans unfinished criteria and saves a cited report, trace, and receipt.</p><code>complete what fits / defer the rest</code></article>
-      </div>
-    </section>
-
-    <section class="boundary-section">
-      <div class="wrap boundary-layout">
-        <div><p class="eyebrow">PERMISSION FIRST. AUTOMATION AFTER.</p><h2>Less babysitting.<br>Same boundaries.</h2><p>The MVP reads approved local text files and sends excerpts only to approved models. It does not browse the web, run a shell, or give an agent arbitrary tools.</p><a class="text-link" href="https://github.com/PKM100/spawn#a-request-is-an-execution-contract">Read the execution contract <span aria-hidden="true">&#8594;</span></a></div>
-        <div class="envelope" aria-label="Example permission envelope">
-          <div class="envelope-title"><span>PERMISSION ENVELOPE</span><span class="tag">EXPLICIT</span></div>
-          <dl><div><dt>Read</dt><dd>notes/</dd></div><div><dt>Write</dt><dd>.spawn/</dd></div><div><dt>Models</dt><dd>Your allowlist</dd></div><div><dt>Data sharing</dt><dd>Requires approval</dd></div><div><dt>Shell / web / arbitrary tools</dt><dd class="denied">Not available</dd></div></dl>
-          <p>Provider billing and network deadlines are best-effort, not hard guarantees.</p>
-        </div>
+        <article class="feature"><span class="feature-number">01</span><h3>Enter the task.</h3><p>Goal, files, criteria, model, budget and deadline. No shell or web tools.</p><code>spawn</code></article>
+        <article class="feature"><span class="feature-number">02</span><h3>Review the plan.</h3><p>Check estimates, scheduled work and sharing permissions before execution.</p><code>Estimates are uncalibrated.</code></article>
+        <article class="feature"><span class="feature-number">03</span><h3>Read the report.</h3><p>Get citations, a trace and a receipt. Unfinished criteria are listed.</p><code>report.md / trace.jsonl / result.json</code></article>
       </div>
     </section>
 
     <section class="section wrap" id="research" aria-labelledby="research-title">
-      <div class="research-heading"><div><p class="eyebrow">02 / SHOW THE WORK</p><h2 id="research-title">Small pilot.<br>Open evidence.</h2></div><p>Live Copilot calls. Frozen authored documents. Same-model baselines. Raw outputs and billing units included. A starting point for research, not a victory lap.</p></div>
-      <div class="research-meta"><span id="pilot-design">4 tasks / 3 policies / 1 repetition</span><span>gpt-6-luna / reasoning: none</span><span>Automated rubric, not human verification</span></div>
+      <div class="research-heading"><div><p class="eyebrow">02 / EVIDENCE</p><h2 id="research-title">Pilot results.</h2></div><p>Four authored tasks, one model, three policies. Tested on v0.1.0, before the wizard and skills.</p></div>
+      <div class="research-meta"><span id="pilot-design">1 repetition / task / policy</span><span>gpt-6-luna / reasoning: none</span><span>Regex scoring / no human review</span></div>
       <div class="table-scroll" tabindex="0" role="region" aria-label="Live pilot comparison table">
         <table>
           <caption class="sr-only">Primary live pilot results; dollars are Copilot usage equivalents, not incremental invoice spending.</caption>
-          <thead><tr><th scope="col">Policy</th><th scope="col">Rubric passes</th><th scope="col">Calls</th><th scope="col">Mean time</th><th scope="col">Total usage equivalent</th></tr></thead>
+          <thead><tr><th scope="col">Policy</th><th scope="col">Rubric passes</th><th scope="col">SDK calls</th><th scope="col">Mean time</th><th scope="col">Usage-equivalent USD (total)</th></tr></thead>
           <tbody id="results-body"><tr><td colspan="5">Loading published results. <a href="https://github.com/PKM100/spawn/tree/main/benchmarks/results/pilot-v1">Read the raw records</a>.</td></tr></tbody>
         </table>
       </div>
-      <p class="results-note" id="results-note">The primary records include preflight predictions, model responses, rubric checks, and paired bootstrap intervals.</p>
-      <div class="research-notice"><strong>Forecasts need work</strong><p>Spawn's cost/time ranges each covered 0/4 observed outcomes. They are not calibrated. Four authored tasks cannot establish general quality or novel optimization; fixed single-pass batching performed similarly.</p></div>
-      <div class="research-links"><a class="text-link" href="https://github.com/PKM100/spawn/blob/main/benchmarks/PROTOCOL.md">Frozen protocol <span aria-hidden="true">&#8599;</span></a><a class="text-link" href="https://github.com/PKM100/spawn/tree/main/benchmarks/results/pilot-v1">Raw results <span aria-hidden="true">&#8599;</span></a><a class="text-link" href="https://github.com/PKM100/spawn/blob/main/benchmarks/RESULTS.md">Findings &amp; limitations <span aria-hidden="true">&#8599;</span></a></div>
+      <p class="results-note" id="results-note">Measurements and scoring are available in the raw data.</p>
+      <div class="research-notice"><strong>Limits</strong><p>Similar to fixed single-pass batching. Cost/time ranges covered 0/4 outcomes. Too small to establish general performance; quotes alone do not prove correctness.</p></div>
+      <div class="research-links"><a class="text-link" href="https://github.com/PKM100/spawn/blob/main/benchmarks/PROTOCOL.md">Protocol <span aria-hidden="true">&#8599;</span></a><a class="text-link" href="https://github.com/PKM100/spawn/tree/main/benchmarks/results/pilot-v1">Data <span aria-hidden="true">&#8599;</span></a><a class="text-link" href="https://github.com/PKM100/spawn/blob/main/benchmarks/RESULTS.md">Analysis <span aria-hidden="true">&#8599;</span></a></div>
     </section>
 
-    <section class="start-section wrap" id="start" aria-labelledby="start-title">
-      <div><p class="eyebrow">03 / RUN SOMETHING REAL</p><h2 id="start-title">One command.<br>Your research contract.</h2><p>Use the wizard for humans, JSON stdin for agents. Bundled Claude Code, Codex and Copilot skills are offered with consent. Try spawn demo without sign-in or paid calls.</p><a class="text-link" href="https://github.com/PKM100/spawn#agent-skills-and-file-free-contracts">Wizard &amp; agent setup <span aria-hidden="true">&#8599;</span></a></div>
-      <div class="install-box"><div class="install-heading"><span>FROM SOURCE / NOT YET ON PYPI</span><button type="button" id="copy-install" aria-label="Copy installation commands">Copy</button></div><pre><code id="install-command">git clone https://github.com/PKM100/spawn.git
-cd spawn
-pipx install '.[copilot]'
-pipx ensurepath
-spawn</code></pre><p id="copy-status" aria-live="polite">Install pipx first. Open a new terminal if PATH changes. Copilot uses CLI sign-in.</p></div>
-    </section>
   </main>
 
-  <footer class="wrap"><a class="wordmark" href="./"><span aria-hidden="true">&gt;_</span> spawn</a><p>Know the tradeoff. Then spawn.</p><div><a href="https://github.com/PKM100/spawn/blob/main/LICENSE">MIT</a><a href="https://github.com/PKM100/spawn/blob/main/CONTRIBUTING.md">Contribute</a><a href="https://github.com/PKM100/spawn">GitHub <span aria-hidden="true">&#8599;</span></a></div></footer>
+  <footer class="wrap"><a class="wordmark" href="./"><span aria-hidden="true">&gt;_</span> spawn</a><p>Document research CLI.</p><div><a href="https://github.com/PKM100/spawn/blob/main/LICENSE">MIT</a><a href="https://github.com/PKM100/spawn/blob/main/CONTRIBUTING.md">Contribute</a><a href="https://github.com/PKM100/spawn">GitHub <span aria-hidden="true">&#8599;</span></a></div></footer>
 </body>
 </html>

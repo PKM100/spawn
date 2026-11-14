@@ -1,486 +1,110 @@
 # Spawn
 
-**Know the tradeoff. Then spawn.**
+A Python CLI and library for local-document research. Set a goal, sources, model,
+budget and deadline; review the plan, then approve execution.
 
-[Website](https://pkm100.github.io/spawn/) ·
-[Pilot results](benchmarks/RESULTS.md) ·
-[Protocol](benchmarks/PROTOCOL.md) · [Contributing](CONTRIBUTING.md)
+Document research is the first use case. The approach can extend to other domains
+with task-specific tools and completion checks; those integrations are not built yet.
 
-A Python library and terminal interface for permission-bound document research:
-preview cost/time scenarios, choose a model and strategy, approve the execution
-envelope, and receive a cited report plus an execution receipt.
+[Website](https://pkm100.github.io/spawn/) · [Results](benchmarks/RESULTS.md) ·
+[Contributing](CONTRIBUTING.md)
 
-**Research MVP, not a validated optimizer.** The current scheduler uses explicit
-heuristics and user-supplied model profiles. A small live pilot is published below;
-it does not establish general savings, calibrated forecasts, or research novelty.
-
-## Try the terminal UI
+## Install
 
 Requires Python 3.11+ and [pipx](https://pipx.pypa.io/stable/installation/).
-On macOS, install pipx with `brew install pipx`.
 
 ```sh
 git clone https://github.com/PKM100/spawn.git
 cd spawn
 pipx install '.[copilot]'
 pipx ensurepath
-# Open a new terminal if pipx added its executable directory to PATH.
 spawn
 ```
 
-**No TOML, JSON file, or code edits are needed for guided research.** Bare `spawn`
-in a terminal asks for the goal, individual source files, prioritized completion
-criteria, source-count requirements, provider/model, spending limit, deadline,
-output directory, scope-reduction and failure policy. You can adjust the preflight,
-then separately approve model sharing and artifact writes. Cancelled launches do
-not run inference or write research artifacts.
-
-Copilot is the default provider. Discovery uses your CLI sign-in, sends no source
-documents and makes no inference calls. The wizard converts live catalog token
-prices and lets you pin a listed model or approve automatic choice among them.
-It uses conservative short-context bounds and uncalibrated throughput assumptions,
-not measured quality or latency estimates. OpenAI-compatible/Anthropic setups ask
-for an endpoint, model ID, **environment-variable name**, and actual token prices;
-the wizard never asks you to paste a secret.
-
-When personal skills are missing, the wizard offers an **opt-in** installation
-for Claude Code, Codex and Copilot. Declining continues research without installing
-them; the offer can appear on a later launch. Package installation itself never
-silently writes to harness directories or changes agent permission settings.
-
-`spawn start` explicitly opens the wizard. With redirected/nonterminal input,
-bare `spawn` shows help and starts nothing; agents should use the stdin interface
-below. `spawn demo` remains entirely offline.
-
-For source development instead of a global command:
-
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -e '.[dev,copilot]'
-.venv/bin/spawn
-.venv/bin/spawn demo
-```
-
-The demo is entirely offline. It uses synthetic responses, simulated token
-accounting, and a synthetic research note. It writes receipts under `.spawn/demo`.
-It does not call a provider or demonstrate real model quality or latency.
-
-The terminal UI includes:
-
-- Cost/time scenarios, planned coverage, and a separate success-probability card.
-- Model and strategy comparison, prioritized deliverables, and deferred work.
-- A read/write/data-sharing permission envelope and explicit upfront approval.
-- Live evidence progress, model calls, accounting, and a final report receipt.
-- An interactive preflight menu for model, spending limit, and deadline changes.
-
-Rich output adapts to terminal width. `NO_COLOR=1` disables color. Source text and
-user-supplied strings are rendered as text, not executable Rich markup.
+Open a new terminal if PATH changed. Copilot requires a separate
+[CLI sign-in](https://docs.github.com/en/copilot/how-tos/copilot-cli).
+No PyPI release yet.
 
 <a id="real-document-research"></a>
 
-## File-based configuration (optional)
+## Usage
 
-The existing file-based commands remain available for reusable configurations.
-
-```sh
-.venv/bin/spawn init my-research
-```
-
-Edit `my-research/models.toml` and `my-research/request.json`. Replace placeholder
-model IDs, example pricing, throughput assumptions, and source documents. **The
-example numbers are not current vendor prices or measured benchmarks.**
+`spawn` opens a wizard—no configuration files needed. It collects the task and
+permissions, shows cost/time scenarios and scheduled work, then asks for approval.
+Runs save a cited report, trace and receipt under the chosen output directory.
+Work that does not fit is deferred.
 
 ```sh
-.venv/bin/spawn plan my-research/request.json --models my-research/models.toml
-.venv/bin/spawn launch my-research/request.json --models my-research/models.toml
+spawn demo           # Offline, synthetic responses; no paid calls
+spawn models --json  # Copilot discovery; no inference
+spawn --help
 ```
 
-`launch` lets you revise the preflight interactively before giving approval.
-It can approve data sharing for that run without modifying the request file.
-Credentials are read from the model profile's environment-variable name, never
-stored in example configurations or traces. Set `OPENAI_API_KEY` or
-`ANTHROPIC_API_KEY` in your environment as appropriate.
+### Models
 
-For automation, explicitly set `permissions.send_documents` to `true`, then:
+Use your Copilot sign-in, OpenAI-compatible endpoints or Anthropic.
+Pin a model or let the scheduler choose among approved profiles.
+Direct APIs require token prices and an API-key environment variable, not a key
+pasted into Spawn. See the [Copilot profile](examples/copilot-models.toml) and
+[model template](src/spawn/templates/models.toml).
 
-```sh
-.venv/bin/spawn plan my-research/request.json \
-  --models my-research/models.toml --model fast --seconds 30 --json
+### Agents
 
-.venv/bin/spawn run my-research/request.json \
-  --models my-research/models.toml --yes --json
-```
-
-Without `--yes`, `run` requires an interactive approval. `--yes` does not expand
-the permissions in the request. Paths in a request are relative to that request
-file, not the current working directory. `init` never overwrites an existing
-directory.
-
-### A request is an execution contract
-
-```json
-{
-  "goal": "Compare the methods and limitations in the supplied notes.",
-  "sources": ["notes/a.md", "notes/b.md"],
-  "criteria": [
-    {
-      "id": "methods",
-      "description": "Compare the two methods using both sources.",
-      "priority": 3,
-      "min_sources": 2
-    },
-    {
-      "id": "limitations",
-      "description": "Identify limitations and remaining questions.",
-      "priority": 1
-    }
-  ],
-  "budget": {"max_usd": 0.25, "max_seconds": 90},
-  "permissions": {
-    "read_roots": ["notes"],
-    "output_root": ".spawn",
-    "allowed_models": ["fast", "alternative"],
-    "send_documents": false
-  },
-  "allow_scope_reduction": true,
-  "on_failure": "defer",
-  "task_class": "methods-comparison"
-}
-```
-
-Spawn loads only explicitly listed UTF-8 `.txt`, `.md`, `.rst`, `.csv`, and `.json`
-files inside approved read roots, resolving symlinks before checking access.
-Documents are limited to 2 MB each and 10 MB in total. Source files are never
-modified. There is no shell execution, PDF parsing, live web search, or arbitrary
-tool execution in this MVP. Excerpts are selected with a simple lexical heuristic.
-
-`single_pass` answers selected criteria in one model call; `incremental` answers
-one criterion at a time for smaller contexts and partial deliverables. The
-planner maximizes scheduled priority coverage, then considers a user-configured
-model preference, estimated cost, and estimated time. It does **not** infer that
-a more expensive model is better, or use unsupported quality estimates.
-Set `"allow_scope_reduction": false` to reject plans that omit any criterion.
-Larger integer `priority` values are more important.
-
-### Bring a model
-
-Add a named model profile to the TOML array. Arbitrary model IDs are accepted
-through OpenAI-compatible Chat Completions endpoints or Anthropic Messages
-endpoints, or the optional Copilot SDK, subject to API compatibility and account
-access. This is not a claim that every model
-will obey the evidence schema or have predictable performance.
-
-For OpenAI-compatible servers, configure `output_limit_field` as
-`max_completion_tokens` or `max_tokens`, and `system_role` as `system` or
-`developer`. `base_url` includes the API prefix (usually `/v1`), not the final
-`/chat/completions` or `/messages` path. HTTPS is required except for explicit
-loopback hosts. Credential-bearing redirects are not followed. No automatic
-retry is performed; failures may still incur provider charges.
-
-`--model NAME` pins an approved profile. Without a pin, the runtime may reselect
-among approved profiles as remaining time, budget, and scope change.
-
-### Use your Copilot sign-in
-
-Install and sign in to the [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli)
-separately, then add the optional SDK dependency from this checkout:
-
-```sh
-.venv/bin/python -m pip install -e '.[copilot]'
-.venv/bin/python -c \
-  'from spawn.copilot_provider import list_models; print([m["id"] for m in list_models()])'
-```
-
-Discovery does not run inference. Copy [the Copilot profile](examples/copilot-models.toml)
-into your model configuration, approve its name in `permissions.allowed_models`,
-and run the usual `plan` / `launch` commands. Pin a discovered model ID if desired.
-Raise both the request budget and any control-file dollar limit to at least
-$0.30 for one Copilot call; the default example's $0.10 limit correctly blocks it.
-SDK 1.0.34 is pinned because its session/usage interfaces are evolving; the primary
-pilot used CLI 1.0.112. Future CLI versions may require compatibility changes.
-
-Copilot runs in a fresh temporary working/storage directory, in SDK `empty` mode,
-with no tools, configuration discovery, custom instructions, skills, hooks,
-compaction, host Git operations, or persistent session store. Permission requests
-are denied. Authentication reuses the installed CLI's signed-in account; Spawn
-does not extract or store its token. `base_url` is descriptive for this backend,
-not a custom Copilot gateway. OpenAI/Anthropic credentials are not required.
-
-**Accounting differs from direct APIs.** Complete session-reported AI credits
-are converted at $0.01/credit; explicitly identified legacy premium requests
-use $0.04/request. These are usage equivalents, **not incremental invoice spend**.
-Incomplete billing retains the full reservation even when token counts exist.
-Copilot profiles require `per_call_usd_reserve >= 0.30` because the SDK's minimum
-session limit is 30 credits. This is a conservative reservation, not the expected
-charge. The cap is soft/postpaid and the requested output length is not
-hard-enforced: neither this setting nor `--usd` guarantees a provider-side cap.
-
-## Agent skills and file-free contracts
-
-Enable the bundled skill through the wizard's offer, or explicitly:
+The wizard offers optional skills for Claude Code, Codex and Copilot. Or install
+them explicitly:
 
 ```sh
 spawn skills install --agent all --scope user
-# Or share it only in the current project:
-spawn skills install --agent all --scope project
+# Use --scope project for the current directory only.
 ```
 
-Claude Code uses `.claude/skills/spawn/SKILL.md`. Codex and Copilot share
-`.agents/skills/spawn/SKILL.md`. Personal scope puts those directories under your
-home; project scope uses the current directory or `--directory PATH`. The installer
-is idempotent for identical files and refuses to overwrite custom skills or follow
-symlinked destinations. The canonical [SKILL.md](src/spawn/templates/SKILL.md)
-is shipped in the Python package, so every installation includes the same guidance.
+Skills are bundled with Spawn, but installation requires consent. They enable
+task-matched document research—not coding loops or automatic spending.
+Invocation depends on the host; reload its skills if needed.
 
-Hosts can match the skill to multi-criterion local-document research, or users can
-invoke it explicitly (Claude Code `/spawn`, Codex `$spawn`, Copilot's skill controls).
-Automatic invocation is host-dependent, not a guaranteed hook for every loop.
-The skill excludes coding, arbitrary tools, web browsing, trivial lookups, recursive
-Spawn calls and unapproved spending. **Installation is not execution consent.**
-Reload/restart your harness if new skills do not appear.
+Agents can pipe a JSON contract to `spawn plan --stdin --json`, then, after
+approval, to `spawn run --stdin --yes --json`. See the
+[skill instructions and contract example](src/spawn/templates/SKILL.md).
 
-Source discovery: [Claude Code](https://code.claude.com/docs/en/skills),
-[Codex](https://learn.chatgpt.com/docs/build-skills), and
-[Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli).
-
-Agents need no TOML or contract files. Pipe this envelope on stdin:
+### Optional configuration files
 
 ```sh
-spawn plan --stdin --json <<'SPAWN_CONTRACT'
-{
-  "copilot_models": ["gpt-6-luna"],
-  "request": {
-    "goal": "Summarize the approved research note.",
-    "sources": ["notes/source.txt"],
-    "criteria": [{"id": "method", "description": "Explain the method."}],
-    "budget": {"max_usd": 1, "max_seconds": 120},
-    "permissions": {
-      "read_roots": ["notes"],
-      "output_root": ".spawn",
-      "allowed_models": ["gpt-6-luna"],
-      "send_documents": false
-    },
-    "allow_scope_reduction": true,
-    "on_failure": "defer"
-  }
-}
-SPAWN_CONTRACT
+spawn init my-research
+# Edit the generated request and model profiles.
+spawn launch my-research/request.json --models my-research/models.toml
 ```
 
-Replace example paths/models with approved ones. `spawn models --json` returns
-enabled, priced Copilot profiles without inference. `copilot_models` must be a
-nonempty explicit model-ID list; it cannot silently broaden `allowed_models`.
-For direct APIs, replace it with `models`, a nonempty array of complete model
-profiles. All relative paths resolve from the command's working directory.
+File-based paths resolve relative to the request; stdin paths resolve from the
+working directory. `--yes` requires explicit `send_documents: true`.
 
-After the user authorizes that exact execution envelope, pipe the same contract
-with `send_documents: true` to `spawn run --stdin --yes --json`. Neither `--yes`
-nor the skill bypasses host permission checks or grants missing sharing permission.
-Stdin cannot be mixed with files or command-line contract overrides. Inputs are
-limited to one million characters. Inspect the receipt even when exit status is
-zero: `partial`/`blocked`, deferred work, errors and violations are not success.
-Do not automatically retry; budgets apply to each run, not an unlimited outer loop.
+## Limits
 
-### Tighten a running deadline
+- Reads approved local text files. No shell, web browsing or arbitrary tools.
+- Cost/time scenarios and success estimates are **not calibrated**. Exact quotes
+  do not establish answer correctness.
+- Provider spending caps and deadlines are best-effort. Copilot reserves at least
+  **$0.30 per call**; reported dollars are usage equivalents, not invoice charges.
+- Reports and receipts can contain source text and paths. Treat them as sensitive.
 
-An optional `control_file` must be inside an approved read root:
+## Evidence
 
-```json
-{"max_seconds": 30, "max_usd": 0.10}
-```
+The v0.1.0 pilot used four authored tasks, one model and one repetition per policy.
+All arms passed the automated rubrics—not independent human verification.
 
-Limits are absolute totals from run start, not additional allowances. The runtime
-reads the file at model-call boundaries, replans unfinished work, and retains
-completed findings. Larger limits are ignored; new models, permissions, and
-other decisions cannot be introduced through this file. To increase authority,
-start a new approved run.
+| Policy | SDK calls | Mean time | Total Copilot usage equivalent |
+| --- | ---: | ---: | ---: |
+| Spawn | 4 | 4.77 s | $0.0004618 |
+| Fixed single pass | 4 | 4.67 s | $0.0004518 |
+| Fixed per criterion | 12 | 12.15 s | $0.0007445 |
 
-Updates do not interrupt an in-flight HTTP call immediately. Network timeouts are
-best-effort; DNS, server behavior, and billing can exceed assumptions. A reduced
-limit can already be exceeded when it is received. In that case Spawn stops
-starting work and reports the violation. Ctrl-C during a model call preserves
-prior findings and retains a reservation for the interrupted request.
+Spawn did not outperform fixed single-pass batching. Its cost/time ranges each
+covered **0/4** outcomes. This pilot does not establish general performance or
+validate the v0.2.0 wizard and skills.
 
-### Understand the estimates
+[Protocol](benchmarks/PROTOCOL.md) · [Raw data](benchmarks/results/pilot-v1) ·
+[Analysis and limitations](benchmarks/RESULTS.md)
 
-| Quantity | Current meaning |
-| --- | --- |
-| Cost/time ranges | Profile-based scenarios, **not** calibrated prediction intervals. |
-| Planned coverage | Priority-weighted fraction of criteria scheduled, not success probability. |
-| Evidence coverage | Fraction with accepted answers and the required distinct-source exact quotes. |
-| Success probability | Unavailable at cold start. After 20 manually labeled comparable runs, a historical rate with a Wilson interval; still explicitly **not calibrated**. |
-| Accounted cost | Direct APIs: reported tokens at configured prices. Copilot: reported credit/request equivalents. Reservations remain when billing is unavailable or a call fails. |
+The current release has 76 automated tests. Development and validation commands
+are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Exact quote existence does not establish semantic support, correctness,
-comprehensiveness, or source trustworthiness. `evidence_ready` is not a claim
-that a human has verified the full task. The system never labels its own
-successes for forecasting.
-
-Historical cohorts use task class, provider/model, strategy, criterion/source
-counts, and source-size and budget buckets. They are coarse and may pool
-different tasks. Repeated correlated tasks, model updates, and selective human
-labeling can bias rates and invalidate the interval's independence assumptions.
-Twenty observations are a display threshold, not a scientific calibration claim.
-Changed strategies, model combinations, scope-reduced runs and live budget changes
-are excluded from matching the original cohort.
-
-Token reservations assume at most one token per UTF-8 byte plus 2048 protocol
-tokens, and output bounded by the configured request limit. This assumption must
-be validated for a new backend. If reported usage exceeds it, the runtime reports
-the violation and starts no further calls. Actual provider bills are authoritative.
-Cache discounts are not assumed. No spending guarantee is made for an arbitrary
-provider or incorrect pricing profile.
-
-## Artifacts and evaluation
-
-Each run gets an isolated directory under the approved output root:
-
-```text
-<run-id>/
-  preflight.json
-  trace.jsonl
-  report.md
-  result.json
-history.sqlite3
-```
-
-Reports contain source quotes and source names. Receipts contain source paths and
-hashes. Traces exclude prompts, model output text, and credentials, but include
-the goal-independent route, criteria IDs, endpoint URLs, and accounting metadata.
-Treat all artifacts as potentially sensitive. Spawn has no independent telemetry
-or artifact upload; provider requests send the explicitly approved excerpts.
-Third-party providers and the installed CLI have their own data policies.
-
-After independently reviewing the **full original contract**, record an outcome:
-
-```sh
-.venv/bin/spawn label RUN_ID --history my-research/.spawn/history.sqlite3 --success
-# Or use --failure. Partial, over-limit, unpriced and synthetic runs cannot be
-# labeled successful.
-```
-
-The evaluator accepts JSONL rows with the following shape:
-
-```json
-{"run_id":"held-out-1","split":"test","prediction":{"cost_usd":[0.01,0.03],"seconds":[5,15],"success_probability":null},"outcome":{"cost_usd":0.02,"seconds":12,"success":true}}
-```
-
-```sh
-.venv/bin/spawn evaluate held-out.jsonl --json
-```
-
-It reports Brier score where probabilities are available, reliability bins,
-midpoint MAE, and observed interval coverage. Marking rows `test` cannot establish
-independence: the experimenter must freeze the policy, preserve original preflight
-predictions, use trusted billing/timing measurements and reviewed outcomes, and
-prevent training/test leakage.
-
-### Research question and falsifiable protocol
-
-**Question:** Can joint preflight forecasting and adaptive execution improve
-deadline-constrained document-research success at a fixed spending limit, compared
-with simpler policies, while accurately forecasting outcomes?
-
-The current implementation is an instrumented baseline for investigating that
-question, not evidence that the hypothesis is true or that the mechanism is new.
-
-An initial experiment should use a frozen corpus and held-out task families with
-explicit answer/citation rubrics. Compare the same model pool and tools under
-fixed-model single-pass execution, a fixed per-criterion loop, simple budget-aware
-rules, per-call model routing, and Spawn's joint scheduler. Relevant prior work
-includes [BATS](https://arxiv.org/abs/2511.17006),
-[Switchcraft](https://arxiv.org/abs/2605.07112), and
-[Agentic Plan Caching](https://proceedings.neurips.cc/paper_files/paper/2025/hash/9549f7d06700f0966d5f938f1d11022a-Abstract-Conference.html).
-
-Use paired tasks and matched tuning effort. Report success, false completion,
-deadline-miss rate, human-rated partial usefulness, cost per successful task, and
-cost/time forecast coverage across budgets. Include preparation, controller,
-verification, retry and profiling overhead, and separate one-time training costs.
-Use held-out models/tool configurations and time-forward tests for transfer.
-Report paired uncertainty estimates and ablate call batching, scope reduction,
-and model switching separately. Do not select operating points on the test set.
-No claimed percentage savings or publication result follows from the offline demo.
-
-### Live feasibility pilot — 2026-11-14
-
-**76 automated tests pass in v0.2.0**, separately from the live experiment.
-The primary v0.1.0 pilot had 60 tests and used the locally frozen implementation
-identified in its metadata; the new wizard/skills have not been re-benchmarked.
-The live pilot
-used four authored document pairs, three frozen criteria per task, three policies,
-one repetition, and Copilot `gpt-6-luna` with reasoning disabled. All arms used
-the same runtime, permissions, model, evidence checks, $2 usage-equivalent budget,
-and 120-second deadline. There were 12 task-policy runs and 20 live evaluation
-calls. This is not a representative or independently held-out benchmark.
-Calls count application-level SDK invocations; SDK/provider-internal retries
-were not separately instrumented.
-
-| Policy | Task rubric passes | Model calls | Mean end-to-end time | Total Copilot usage equivalent |
-| --- | ---: | ---: | ---: | ---: |
-| Spawn | 4/4 | 4 | 4.77 s | $0.0004618 |
-| Fixed single pass | 4/4 | 4 | 4.67 s | $0.0004518 |
-| Fixed per criterion | 4/4 | 12 | 12.15 s | $0.0007445 |
-
-Spawn used 38.0% less usage-equivalent cost and 60.7% less time than the
-per-criterion loop **in this pilot**, but did not outperform fixed single-pass
-batching. The result supports batching on these small tasks, not superiority of
-the joint scheduler. The frozen regex rubric passed 36/36 criterion checks
-across all arms, including an abstention criterion; this is **not** independent
-semantic verification or calibrated task-success probability.
-
-**Important negative result:** Spawn's cost and time scenario ranges each covered
-0/4 observed outcomes; actual usage/time were below their lower bounds.
-Forecasts are not calibrated and must not be marketed as reliable intervals.
-All runs stayed within their configured limits, but these generous budgets do
-not validate adaptive deadline handling or model routing.
-
-The entire experiment, including one separately logged setup smoke call, used
-about **$0.0016806 in Copilot usage equivalent**, not incremental billed dollars.
-End-to-end policy timing includes preflight, SDK/CLI startup, calls, checks and
-receipts; excludes installation, sign-in, discovery and the setup smoke.
-
-See the [locally frozen protocol](benchmarks/PROTOCOL.md),
-[raw responses, usage, hashes and versions](benchmarks/results/pilot-v1),
-and [results, paired intervals and paper limitations](benchmarks/RESULTS.md).
-Recompute the summary without a model call:
-
-```sh
-.venv/bin/python benchmarks/run_pilot.py --summarize
-```
-
-## Python API
-
-```python
-from pathlib import Path
-from spawn import Planner, Runtime
-from spawn.config import load_models, load_request
-from spawn.documents import load_documents
-
-request = load_request(Path("my-research/request.json"))
-planner = Planner(load_models(Path("my-research/models.toml")))
-forecast = planner.plan(request, load_documents(request))
-print(forecast.public())
-
-# Requires send_documents=true in this explicit permission envelope.
-result = Runtime(planner, on_event=lambda event: print(event["type"])).run(request)
-```
-
-## Development
-
-```sh
-.venv/bin/python -m unittest discover -s tests -v
-.venv/bin/ruff check src tests benchmarks/run_pilot.py
-.venv/bin/ruff format --check src tests benchmarks/run_pilot.py
-```
-
-Tests use local fixtures and fake responses, not paid APIs. Provider request and
-response compatibility tests do not establish live service availability. Installing
-`.[dev,copilot]` runs the optional SDK isolation test as well. See
-[CONTRIBUTING.md](CONTRIBUTING.md) for wheel builds and pilot reproduction.
-
-## License and citation
-
-[MIT](LICENSE), including the authored benchmark fixtures. Cite the software with
-[CITATION.cff](CITATION.cff) and identify the commit used. There is no associated
-peer-reviewed paper yet. The project is distributed from this repository; no
-PyPI release or package-name availability is claimed.
+[MIT license](LICENSE) · [Citation](CITATION.cff)
