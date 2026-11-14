@@ -305,6 +305,8 @@ one repetition, and Copilot `gpt-6-luna` with reasoning disabled. All arms used
 the same runtime, permissions, model, evidence checks, $2 usage-equivalent budget,
 and 120-second deadline. There were 12 task-policy runs and 20 live evaluation
 calls. This is not a representative or independently held-out benchmark.
+Calls count application-level SDK invocations; SDK/provider-internal retries
+were not separately instrumented.
 
 | Policy | Task rubric passes | Model calls | Mean end-to-end time | Total Copilot usage equivalent |
 | --- | ---: | ---: | ---: | ---: |

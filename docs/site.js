@@ -59,6 +59,7 @@ async function showResults() {
     document.getElementById("results-note").textContent =
       `Primary pilot: ${data.date}. ${data.summary.runs} runs; one repetition per task/policy. ` +
       "Time includes planning, CLI/SDK startup, calls, checks, and receipts. " +
+      "Calls count application-level SDK invocations. " +
       "Dollars are Copilot usage equivalents, not incremental invoice spend. " +
       "Setup smoke and environment installation are excluded from policy comparisons.";
   } catch {

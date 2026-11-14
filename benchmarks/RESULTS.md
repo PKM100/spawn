@@ -43,10 +43,16 @@ independently verify semantic support, answer correctness, or task completeness.
 | Fixed per criterion | 4/4 | 12/12 | 12 | 12.1484 | 0.0007445 |
 
 All 12 runs stayed within the configured limits. There were no provider failures,
-automatic retries, incomplete billing records, or false `evidence_ready` statuses
+Spawn-level retries, incomplete billing records, or false `evidence_ready` statuses
 under the automated rubric. Every policy omitted the unsupported certification
 finding. The authored fixture's invented Mesa study numbers are document contents,
 not these measured results.
+
+Call counts mean application-level `complete` / `send_and_wait` invocations.
+SDK/provider-internal request retries were not separately instrumented. The
+protocol's no-retry rule is enforced by Spawn and the experiment runner; it is
+not a claim about unobserved provider behavior. Complete session billing totals,
+rather than application call counts, determine the usage-equivalent cost.
 
 Relative to the per-criterion loop, Spawn reduced usage-equivalent cost by 38.0%
 and end-to-end time by 60.7%. Relative to fixed single pass, it was approximately
